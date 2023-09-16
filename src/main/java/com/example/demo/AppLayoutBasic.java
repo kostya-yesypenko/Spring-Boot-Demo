@@ -2,6 +2,10 @@ package com.example.demo;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.example.configuration.BeanWirer;
+import com.example.service.EmployeeService;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
@@ -20,8 +24,13 @@ import com.vaadin.flow.router.Route;
 @SuppressWarnings("unchecked")
 public class AppLayoutBasic extends AppLayout {
 
+	@Autowired 
+	private EmployeeService emplService;
 	public AppLayoutBasic() {
+		BeanWirer.wire(this);
         DrawerToggle toggle = new DrawerToggle();
+        
+        emplService.getAll();
 
         H1 title = new H1("MyApp");
         title.getStyle().set("font-size", "var(--lumo-font-size-l)")
