@@ -7,11 +7,15 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.vaadin.flow.spring.annotation.EnableVaadin;
+
 @SpringBootApplication
 @ComponentScan("com.example")
 @EnableJpaRepositories("com.example")
 @EnableTransactionManagement
 @EntityScan(basePackages="com.example")
+@EnableVaadin("com.example")
+
 public class DemoApplication {
 
 	public static void main(String[] args) {

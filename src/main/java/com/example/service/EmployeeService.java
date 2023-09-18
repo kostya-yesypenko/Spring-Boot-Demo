@@ -3,6 +3,7 @@ package com.example.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.example.domain.Employee;
@@ -23,4 +24,8 @@ public class EmployeeService {
 	public void saveAll(List<Employee> employees) {	
 		emplRepo.saveAll(employees);
 	}
+	
+	public void updateEmployeeRole(int id, String role) {
+		emplRepo.updateEmployeeRole(id, role);
+	}	
 }
