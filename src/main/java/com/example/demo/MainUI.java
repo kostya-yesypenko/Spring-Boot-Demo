@@ -7,6 +7,7 @@ import com.example.service.EmployeeService;
 import com.example.ui.EmployeePage;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -18,6 +19,7 @@ import com.vaadin.flow.router.RouterLink;
 
 @Route("demo") // map view to the root
 @SuppressWarnings("unchecked")
+@CssImport("./styles.css")
 public class MainUI extends AppLayout {
 
 	@Autowired

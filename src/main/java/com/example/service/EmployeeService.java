@@ -27,5 +27,9 @@ public class EmployeeService {
 	
 	public void updateEmployeeRole(int id, String role) {
 		emplRepo.updateEmployeeRole(id, role);
+	}
+
+	public void save(Employee empl) {
+		emplRepo.save(empl);		
 	}	
 }

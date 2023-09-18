@@ -32,3 +32,11 @@ replay_pid*
 .sts4-cache
 /frontend
 /target
+/src/main/dev-bundle
+/node_modules
+/package-lock.json
+/package.json
+/tsconfig.json
+/types.d.ts
+/vite.config.ts
+/vite.generated.ts

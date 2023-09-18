@@ -7,42 +7,57 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.configuration.BeanWirer;
 import com.example.domain.Employee;
+import com.example.domain.Role;
 import com.example.service.EmployeeService;
+import com.example.service.RoleService;
 import com.example.demo.MainUI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 
 @Route(value = "EmployeePage", layout = MainUI.class) // map view to the root
-@SuppressWarnings("unchecked")
 public class EmployeePage extends HorizontalLayout {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Autowired
 	private EmployeeService emplService;
-	
-	FormLayout formLayout = new FormLayout();
+
+	@Autowired
+	private RoleService roleService;
+
+	Grid<Employee> grid;
+
+	VerticalLayout editFormLayout = new VerticalLayout();
 
 	public EmployeePage() {
 		super();
 		BeanWirer.wire(this);
 
-		setSizeFull();
+		setHeight("100%");
 
 		createContent();
 	}
 
 	private void createContent() {
-		Grid<Employee> grid = new Grid<>();
+		grid = new Grid<>();
 		grid.setItems(getEmployees());
 		grid.setSizeFull();
 		grid.setWidth("600px");
 		grid.addColumn(e -> e.getId()).setWidth("50px").setHeader("ID").setComparator(Employee::getId);
 		grid.addColumn(e -> e.getName()).setWidth("300px").setHeader("Name").setComparator(Employee::getName);
-		grid.addColumn(e -> e.getRole()).setWidth("250px").setHeader("Role").setComparator(Employee::getRole);
+		grid.addColumn(e -> e.getRole().getName()).setWidth("250px").setHeader("Role").setComparator(e -> e.getRole().getName());
 
 		grid.setColumnReorderingAllowed(true);
 
@@ -53,30 +68,64 @@ public class EmployeePage extends HorizontalLayout {
 		grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
 		grid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS);
 
-		grid.addItemDoubleClickListener(employee -> {
+		grid.addItemClickListener(employee -> {
 			createEditEmployeeForm(employee.getItem());
 		});
+		
 
 		add(grid);
 	}
 
-	private void createEditEmployeeForm(Employee e) {
-		this.remove(formLayout);
-		
+	private void createEditEmployeeForm(Employee empl) {
+		editFormLayout.removeAll();
+		this.remove(editFormLayout);
+		editFormLayout.setWidth(null);
+
+		Binder<Employee> binder = new Binder<>(Employee.class);
+
 		TextField id = new TextField("ID");
-		id.setValue(String.valueOf(e.getId()));
 		id.setReadOnly(true);
+		binder.forField(id).bind(e -> String.valueOf(e.getId()), null);
 
 		TextField name = new TextField("Name");
-		name.setValue(e.getName());
+		binder.forField(name).asRequired("Name should not be empty").bind(e -> e.getName(),
+				(e, newName) -> e.setName(newName));
 
-		TextField role = new TextField("Role");
-		role.setValue(e.getRole());
+		ComboBox<Role> role = new ComboBox<>("Role", getRoles());
+		role.setItemLabelGenerator(r -> r.getName());
+		binder.forField(role)
+				.withValidator(r -> r.getName().length() >= 3, "Role must contain at least three characters")
+				.bind(e -> e.getRole(), (e, newRole) -> e.setRole(newRole));
 
-		formLayout = new FormLayout();
+		FormLayout formLayout = new FormLayout();
 		formLayout.add(id, name, role);
 		formLayout.setResponsiveSteps(new ResponsiveStep("0", 1));
-		this.addAndExpand(formLayout);
+		formLayout.setWidth("500px");
+
+		Button saveButton = new Button("Save", event -> {
+			try {
+				binder.writeBean(empl);
+				emplService.save(empl);
+				grid.setItems(getEmployees());
+			} catch (ValidationException e) {
+
+			}
+		});
+		this.add(saveButton);
+
+		Button reloadButton = new Button("Reload");
+		reloadButton.addClickListener(load -> {
+			binder.readBean(empl);
+		});
+		editFormLayout.add(formLayout, saveButton, reloadButton);
+
+		this.add(editFormLayout);
+
+		binder.readBean(empl);
+	}
+
+	private List<Role> getRoles() {
+		return roleService.getAll();
 	}
 
 	private List<Employee> getEmployees() {
