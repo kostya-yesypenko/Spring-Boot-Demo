@@ -13,8 +13,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @EqualsAndHashCode(of = "id")
-@Table(name = "employee")
-public class Employee {
+@Table(name = "customer")
+public class Customer {
 	@Id 
 	@GeneratedValue
 	@Column(name ="id")

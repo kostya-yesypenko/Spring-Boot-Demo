@@ -3,8 +3,8 @@ package com.example.demo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.configuration.BeanWirer;
-import com.example.service.EmployeeService;
-import com.example.ui.EmployeePage;
+import com.example.ui.CustomerPage;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -22,14 +22,10 @@ import com.vaadin.flow.router.RouterLink;
 @CssImport("./styles.css")
 public class MainUI extends AppLayout {
 
-	@Autowired
-	private EmployeeService emplService;
 
 	public MainUI() {
 		BeanWirer.wire(this);
 		DrawerToggle toggle = new DrawerToggle();
-
-		emplService.getAll();
 
 		H1 title = new H1("MyApp");
 		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
@@ -42,26 +38,28 @@ public class MainUI extends AppLayout {
 
 	private Tabs getTabs() {
         Tabs tabs = new Tabs();
-        tabs.add(createTab(VaadinIcon.DASHBOARD, "Dashboard"),
-                createTab(VaadinIcon.USERS, "Employees"),
-                createTab(VaadinIcon.CART, "Orders"),
-                createTab(VaadinIcon.USER_HEART, "Customers"),
-                createTab(VaadinIcon.PACKAGE, "Products"),
-                createTab(VaadinIcon.RECORDS, "Documents"),
-                createTab(VaadinIcon.LIST, "Tasks"),
-                createTab(VaadinIcon.CHART, "Analytics"));
+        tabs.add(createTab(VaadinIcon.DASHBOARD, "Dashboard", null),
+                createTab(VaadinIcon.CART, "Orders", null),
+                createTab(VaadinIcon.USER_HEART, "Customers", CustomerPage.class),
+                createTab(VaadinIcon.PACKAGE, "Products", null),
+                createTab(VaadinIcon.RECORDS, "Documents", null),
+                createTab(VaadinIcon.LIST, "Tasks", null),
+                createTab(VaadinIcon.CHART, "Analytics", null));
         tabs.setOrientation(Tabs.Orientation.VERTICAL);
         return tabs;
     }
 
-    private Tab createTab(VaadinIcon viewIcon, String viewName) {
+    private Tab createTab(VaadinIcon viewIcon, String viewName, Class<? extends Component> clazz) {
         Icon icon = viewIcon.create();
         icon.getStyle().set("box-sizing", "border-box")
                 .set("margin-inline-end", "var(--lumo-space-m)")
                 .set("margin-inline-start", "var(--lumo-space-xs)")
                 .set("padding", "var(--lumo-space-xs)");
 
-        RouterLink link = new RouterLink(EmployeePage.class);
+        RouterLink link = new RouterLink();
+        if (clazz !=null) {
+        	link.setRoute(clazz);
+        }
         link.add(icon, new Span(viewName));
         // Demo has no routes
         link.setTabIndex(-1);

@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.configuration.BeanWirer;
-import com.example.domain.Employee;
+import com.example.domain.Customer;
 import com.example.domain.Role;
-import com.example.service.EmployeeService;
+import com.example.service.CustomerService;
 import com.example.service.RoleService;
 import com.example.demo.MainUI;
 import com.vaadin.flow.component.button.Button;
@@ -24,24 +24,24 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 
-@Route(value = "EmployeePage", layout = MainUI.class) // map view to the root
-public class EmployeePage extends HorizontalLayout {
+@Route(value = "CustomerPage", layout = MainUI.class) // map view to the root
+public class CustomerPage extends HorizontalLayout {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	private EmployeeService emplService;
+	private CustomerService emplService;
 
 	@Autowired
 	private RoleService roleService;
 
-	Grid<Employee> grid;
+	Grid<Customer> grid;
 
 	VerticalLayout editFormLayout = new VerticalLayout();
 
-	public EmployeePage() {
+	public CustomerPage() {
 		super();
 		BeanWirer.wire(this);
 
@@ -52,11 +52,11 @@ public class EmployeePage extends HorizontalLayout {
 
 	private void createContent() {
 		grid = new Grid<>();
-		grid.setItems(getEmployees());
+		grid.setItems(getCustomers());
 		grid.setSizeFull();
 		grid.setWidth("600px");
-		grid.addColumn(e -> e.getId()).setWidth("50px").setHeader("ID").setComparator(Employee::getId);
-		grid.addColumn(e -> e.getName()).setWidth("300px").setHeader("Name").setComparator(Employee::getName);
+		grid.addColumn(e -> e.getId()).setWidth("50px").setHeader("ID").setComparator(Customer::getId);
+		grid.addColumn(e -> e.getName()).setWidth("300px").setHeader("Name").setComparator(Customer::getName);
 		grid.addColumn(e -> e.getRole().getName()).setWidth("250px").setHeader("Role").setComparator(e -> e.getRole().getName());
 
 		grid.setColumnReorderingAllowed(true);
@@ -69,19 +69,19 @@ public class EmployeePage extends HorizontalLayout {
 		grid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS);
 
 		grid.addItemClickListener(employee -> {
-			createEditEmployeeForm(employee.getItem());
+			createEditCustomerForm(employee.getItem());
 		});
 		
 
 		add(grid);
 	}
 
-	private void createEditEmployeeForm(Employee empl) {
+	private void createEditCustomerForm(Customer empl) {
 		editFormLayout.removeAll();
 		this.remove(editFormLayout);
 		editFormLayout.setWidth(null);
 
-		Binder<Employee> binder = new Binder<>(Employee.class);
+		Binder<Customer> binder = new Binder<>(Customer.class);
 
 		TextField id = new TextField("ID");
 		id.setReadOnly(true);
@@ -106,7 +106,7 @@ public class EmployeePage extends HorizontalLayout {
 			try {
 				binder.writeBean(empl);
 				emplService.save(empl);
-				grid.setItems(getEmployees());
+				grid.setItems(getCustomers());
 			} catch (ValidationException e) {
 
 			}
@@ -128,7 +128,7 @@ public class EmployeePage extends HorizontalLayout {
 		return roleService.getAll();
 	}
 
-	private List<Employee> getEmployees() {
+	private List<Customer> getCustomers() {
 		return emplService.getAll().stream().sorted((e1, e2) -> e1.getName().compareTo(e2.getName()))
 				.collect(Collectors.toList());
 	}
