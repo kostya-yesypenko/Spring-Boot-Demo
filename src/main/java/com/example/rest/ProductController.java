@@ -7,18 +7,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.domain.Customer;
-import com.example.service.CustomerService;
+import com.example.domain.Product;
+import com.example.service.ProductService;
 
 @RestController
 @RequestMapping("rest")
-class CustomerController {
+class ProductController {
 	@Autowired
-	private CustomerService cstmService;
+	private ProductService prodService;
 
-	@GetMapping("/customers")
-	List<Customer> all() {
-		return cstmService.getAll();
+	@GetMapping("/products")
+	List<Product> all() {
+		return prodService.getAll();
 	}
   /*
   // end::get-aggregate-root[]

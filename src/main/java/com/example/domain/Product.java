@@ -13,16 +13,16 @@ import lombok.EqualsAndHashCode;
 @Data
 @Entity
 @EqualsAndHashCode(of = "id")
-@Table(name = "customer")
-public class Customer {
+@Table(name = "product")
+public class Product {
 	@Id 
 	@GeneratedValue
 	@Column(name ="id")
 	private Integer id;
 	@Column(name ="name")
 	private String name;
-	
-	@OneToOne
-	@JoinColumn(name = "role_id")
-	private Role role;
+	@Column(name ="qty")
+	private Integer qty = 1;
+	@Column(name ="price")
+	private Double price = Double.valueOf(1);
 }
