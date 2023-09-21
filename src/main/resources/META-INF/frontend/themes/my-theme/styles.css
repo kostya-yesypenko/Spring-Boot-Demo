@@ -1,4 +1,15 @@
 html {
-  --lumo-primary-color: green;
-  --lumo-font-family: "Roboto";
+  
+}
+
+.info-notification {
+	/*background: lightgreen;*/
+}
+
+.warn-notification {
+	/*background: rgb(255, 255, 128);*/
+}
+
+.error-notification {
+	/*background: rgb(255, 128, 128);*/
 }

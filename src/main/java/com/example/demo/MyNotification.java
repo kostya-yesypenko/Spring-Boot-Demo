@@ -20,13 +20,28 @@ import com.vaadin.flow.router.Route;
 @SuppressWarnings("unchecked")
 public class MyNotification{
 	public static void info(String msg) {
-		Notification.show(msg, 5000, Position.TOP_END);
+		Notification notification = createNotification(msg, Position.TOP_END, 5000);
+		notification.addClassName("info-notification");	
+		notification.open();
 	}
 	public static void error(String msg) {
-		Notification notification = new Notification();
+		Notification notification = createNotification(msg, Position.BOTTOM_CENTER, 0);
+		notification.addClassName("error-notification");
+
 		notification.getElement().addEventListener("click", click->{
 			notification.close();
 		});
-		notification.show(msg, 0, Position.BOTTOM_CENTER);
+		notification.open();
+	}
+	
+	public static void warn(String msg) {
+		Notification notification = createNotification(msg, Position.TOP_END, 0);
+		notification.addClassName("warn-notification");	
+		notification.open();
+	}
+	
+	private static Notification createNotification(String msg, Position pos, int duration) {
+		Notification notification = new Notification(msg, duration, Position.TOP_END);	
+		return notification;
 	}
 }

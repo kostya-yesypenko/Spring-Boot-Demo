@@ -1,9 +1,6 @@
 package com.example.ui;
 
-import com.example.domain.Customer;
 import com.example.domain.Product;
-import com.example.domain.Role;
-import com.example.service.CustomerService;
 import com.example.service.ProductService;
 
 import java.util.List;
@@ -13,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.demo.MainUI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.textfield.TextField;
@@ -50,13 +46,13 @@ public class ProductPage extends BasePage<Product> {
 			createEditForm(product.getItem());
 		});
 
-		grid.setItems(getProducts());
+		grid.setItems(getItems());
 	}
 
 	@Override
-	protected void createEditForm(Object prod) {
+	protected void createEditForm(Object it) {
 		
-		Product product = prod == null? new Product() : (Product) prod;
+		Product item = it == null? new Product() : (Product) it;
 		editFormLayout.removeAll();
 		this.remove(editFormLayout);
 		editFormLayout.setWidth(null);
@@ -87,9 +83,9 @@ public class ProductPage extends BasePage<Product> {
 
 		Button saveButton = new Button("Save", event -> {
 			try {
-				binder.writeBean(product);
-				prodService.save(product);
-				grid.setItems(getProducts());
+				binder.writeBean(item);
+				prodService.save(item);
+				grid.setItems(getItems());
 			} catch (ValidationException e) {
 
 			}
@@ -98,16 +94,16 @@ public class ProductPage extends BasePage<Product> {
 
 		Button reloadButton = new Button("Reload");
 		reloadButton.addClickListener(load -> {
-			binder.readBean(product);
+			binder.readBean(item);
 		});
 		editFormLayout.add(formLayout, saveButton, reloadButton);
 
 		this.add(editFormLayout);
 
-		binder.readBean(product);
+		binder.readBean(item);
 	}
 
-	private List<Product> getProducts() {
+	private List<Product> getItems() {
 		return prodService.getAll().stream().sorted((p1, p2) -> p1.getName().compareTo(p2.getName()))
 				.collect(Collectors.toList());
 	}

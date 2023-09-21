@@ -1,8 +1,12 @@
 package com.example.demo;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import com.example.configuration.BeanWirer;
-import com.example.ui.CustomerPage;
+import com.example.ui.*;
+import com.example.ui.OrderPage;
 import com.example.ui.ProductPage;
+import com.example.ui.TaskPage;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -16,31 +20,34 @@ import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.theme.lumo.Lumo;
+
 import com.vaadin.flow.component.checkbox.Checkbox;
 
 @Route("demo") // map view to the root
 @SuppressWarnings("unchecked")
 public class MainUI extends AppLayout {
+	@Value("${default.user:dmytro}")
+	private String username;
 
 	public MainUI() {
 		BeanWirer.wire(this);
 		DrawerToggle toggle = new DrawerToggle();
-
-		H1 title = new H1("MyApp");
-		title.getStyle().set("font-size", "var(--lumo-font-size-l)").set("margin", "0");
+				
+		H1 user = new H1("Hi, " + username);
+		user.getStyle().set("font-size", "var(--lumo-font-size-l)").set("font-weight", "bold");
 
 		Tabs tabs = getTabs();
 
 		addToDrawer(createToggleThemeButton(), tabs);
-		addToNavbar(toggle, title);
+		addToNavbar(toggle, user);
 	}
 
 	private Tabs getTabs() {
 		Tabs tabs = new Tabs();
-		tabs.add(createTab(VaadinIcon.DASHBOARD, "Dashboard", null), createTab(VaadinIcon.CART, "Orders", null),
+		tabs.add(createTab(VaadinIcon.DASHBOARD, "Dashboard", null), createTab(VaadinIcon.CART, "Orders", OrderPage.class),
 				createTab(VaadinIcon.USER_HEART, "Customers", CustomerPage.class),
 				createTab(VaadinIcon.PACKAGE, "Products", ProductPage.class),
-				createTab(VaadinIcon.RECORDS, "Documents", null), createTab(VaadinIcon.LIST, "Tasks", null),
+				createTab(VaadinIcon.RECORDS, "Documents", null), createTab(VaadinIcon.LIST, "Tasks", TaskPage.class),
 				createTab(VaadinIcon.CHART, "Analytics", null));
 		tabs.setOrientation(Tabs.Orientation.VERTICAL);
 		return tabs;

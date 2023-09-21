@@ -1,28 +1,21 @@
 package com.example.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.domain.Customer;
 import com.example.repository.CustomerRepository;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
-public class CustomerService {
+public class CustomerService extends BaseService<Customer, Integer> {
 	
 	@Autowired
-	private CustomerRepository cstmRepo;	
-
-	public List<Customer> getAll() {
-		return cstmRepo.findAll();
-	}
+	private CustomerRepository cstmRepo;
 	
-	public void saveAll(List<Customer> customers) {	
-		cstmRepo.saveAll(customers);
-	}
-	
-	public void save(Customer empl) {
-		cstmRepo.save(empl);		
+	@PostConstruct
+	private void init() {
+		setRepo(cstmRepo);
 	}	
 }

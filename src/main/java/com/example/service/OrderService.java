@@ -3,19 +3,19 @@ package com.example.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.domain.Product;
-import com.example.repository.ProductRepository;
+import com.example.domain.Order;
+import com.example.repository.OrderRepository;
 
 import jakarta.annotation.PostConstruct;
 
 @Service
-public class ProductService extends BaseService<Product, Integer> {
+public class OrderService extends BaseService<Order, Integer> {
 	
 	@Autowired
-	private ProductRepository prodRepo;	
-
+	private OrderRepository orderRepo;	
+	
 	@PostConstruct
 	private void init() {
-		setRepo(prodRepo);
-	}		
+		setRepo(orderRepo);
+	}	
 }

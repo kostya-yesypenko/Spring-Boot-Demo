@@ -1,17 +1,18 @@
 package com.example.ui;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.domain.Customer;
-import com.example.domain.Role;
-import com.example.enums.Roles;
+import com.example.domain.Order;
+import com.example.domain.Product;
 import com.example.service.CustomerService;
-import com.example.service.RoleService;
+import com.example.service.OrderService;
+import com.example.service.ProductService;
 import com.example.demo.MainUI;
-import com.example.demo.MyNotification;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -21,8 +22,8 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 
-@Route(value = "CustomerPage", layout = MainUI.class) // map view to the root
-public class CustomerPage extends BasePage<Customer> {
+@Route(value = "OrderPage", layout = MainUI.class) // map view to the root
+public class OrderPage extends BasePage<Order> {
 	/**
 	 * 
 	 */
@@ -30,68 +31,65 @@ public class CustomerPage extends BasePage<Customer> {
 
 	@Autowired
 	private CustomerService customerService;
-
 	@Autowired
-	private RoleService roleService;
+	private OrderService orderService;
+	@Autowired
+	private ProductService productService;
 
-	public CustomerPage() {
-		super();		
+	public OrderPage() {
+		super();
 	}
-	
+
 	@Override
 	protected void loadGrid() {
-		grid.addColumn(e -> e.getId()).setWidth("50px").setHeader("ID").setComparator(Customer::getId);
-		grid.addColumn(e -> e.getName()).setWidth("300px").setHeader("Name").setComparator(Customer::getName);
-		grid.addColumn(e -> e.getRole().getName()).setWidth("250px").setHeader("Role").setComparator(e -> e.getRole().getName());
+		grid.addColumn(e -> e.getId()).setWidth("50px").setHeader("ID").setComparator(Order::getId);
+		grid.addColumn(e -> e.getCustomer().getName()).setWidth("300px").setHeader("Customer Name");
+		grid.addColumn(e -> e.getProduct().getName()).setWidth("250px").setHeader("Product");
 		grid.getColumns().forEach(col -> {
 			col.setSortable(true);
 		});
-		
+
 		grid.addItemClickListener(item -> {
 			createEditForm(item.getItem());
 		});
-		
+
 		grid.setItems(getItems());
 	}
 
 	@Override
 	protected void createEditForm(Object it) {
-		
-		Customer item = it == null? new Customer() : (Customer) it;
+
+		Order item = it == null ? new Order() : (Order) it;
 		editFormLayout.removeAll();
 		this.remove(editFormLayout);
 		editFormLayout.setWidth(null);
 
-		Binder<Customer> binder = new Binder<>(Customer.class);
+		Binder<Order> binder = new Binder<>(Order.class);
 
 		TextField id = new TextField("ID");
 		id.setReadOnly(true);
 		binder.forField(id).withNullRepresentation("").bind(e -> String.valueOf(e.getId()), null);
 
-		TextField name = new TextField("Name");
-		binder.forField(name).withNullRepresentation("").asRequired("Name should not be empty").bind(e -> e.getName(),
-				(e, newName) -> e.setName(newName));
+		ComboBox<Customer> customers = new ComboBox<>("Customer", getCustomers());
+		customers.setItemLabelGenerator(r -> r.getName());
 
-		ComboBox<Role> role = new ComboBox<>("Role", getRoles());
-		role.addValueChangeListener(change->{
-			if (Roles.SUPERVISOR.getName().equals(change.getValue().getName())){
-				MyNotification.error("CAUTION: You Selected Supervisor role!");
-			}
-		});
-		role.setItemLabelGenerator(r -> r.getName());
-		binder.forField(role)
-				.withValidator(r -> r.getName().length() >= 3, "Role must contain at least three characters")
-				.bind(e -> e.getRole(), (e, newRole) -> e.setRole(newRole));
+		binder.forField(customers).asRequired("Customer should not be empty").bind(e -> e.getCustomer(),
+				(e, newCustomer) -> e.setCustomer(newCustomer));
+
+		ComboBox<Product> products = new ComboBox<>("Product", getProducts());
+		products.setItemLabelGenerator(r -> r.getName());
+		binder.forField(products).asRequired("Product should not be empty").bind(e -> e.getProduct(),
+				(e, newProduct) -> e.setProduct(newProduct));
 
 		FormLayout formLayout = new FormLayout();
-		formLayout.add(id, name, role);
+		formLayout.add(id, customers, products);
 		formLayout.setResponsiveSteps(new ResponsiveStep("0", 1));
 		formLayout.setWidth("500px");
 
 		Button saveButton = new Button("Save", event -> {
 			try {
 				binder.writeBean(item);
-				customerService.save(item);
+				orderService.save(item);
 				grid.setItems(getItems());
 			} catch (ValidationException e) {
 
@@ -110,12 +108,18 @@ public class CustomerPage extends BasePage<Customer> {
 		binder.readBean(item);
 	}
 
-	private List<Role> getRoles() {
-		return roleService.getAll();
+	private List<Product> getProducts() {
+		return productService.getAll().stream().sorted((e1, e2) -> e1.getName().compareTo(e2.getName()))
+				.collect(Collectors.toList());
 	}
 
-	private List<Customer> getItems() {
+	private List<Customer> getCustomers() {
 		return customerService.getAll().stream().sorted((e1, e2) -> e1.getName().compareTo(e2.getName()))
+				.collect(Collectors.toList());
+	}
+
+	private List<Order> getItems() {
+		return orderService.getAll().stream().sorted((e1, e2) -> e1.getId().compareTo(e2.getId()))
 				.collect(Collectors.toList());
 	}
 }
