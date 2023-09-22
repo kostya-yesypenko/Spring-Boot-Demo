@@ -11,7 +11,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-public abstract class BasePage<T> extends HorizontalLayout {
+public abstract class BasePage<T> extends HorizontalLayout implements Refreshable {
 	/**
 	 * 
 	 */
@@ -32,7 +32,7 @@ public abstract class BasePage<T> extends HorizontalLayout {
 		createContent();
 	}
 
-	private void createContent() {
+	protected void createContent() {
 		createGrid();		
 	}
 
@@ -47,7 +47,8 @@ public abstract class BasePage<T> extends HorizontalLayout {
 		grid.addThemeVariants(GridVariant.LUMO_COLUMN_BORDERS);
 		grid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS);		
 
-		VerticalLayout gridAndButtonLayout = new VerticalLayout(createAddNewButton(), grid);
+		
+		VerticalLayout gridAndButtonLayout = new VerticalLayout(createToolbar(), grid);
 		gridAndButtonLayout.setPadding(false);
 		gridAndButtonLayout.setSpacing(false);
 		add(gridAndButtonLayout);
@@ -55,6 +56,18 @@ public abstract class BasePage<T> extends HorizontalLayout {
 		loadGrid();
 	}
 	
+	private HorizontalLayout createToolbar() {
+		var layout = new HorizontalLayout();
+		layout.setPadding(false);
+		
+		Button refreshBtn = new Button("Refresh", new Icon(VaadinIcon.REFRESH));
+		refreshBtn.addThemeVariants(ButtonVariant.LUMO_ICON);
+		refreshBtn.addClickListener(c -> refresh());
+		
+		layout.add(refreshBtn, createAddNewButton());
+		return layout;
+	}
+
 	private Component createAddNewButton() {
 		Button btn = new Button(new Icon(VaadinIcon.PLUS_CIRCLE));
 		btn.addThemeVariants(ButtonVariant.LUMO_ICON);
@@ -69,4 +82,10 @@ public abstract class BasePage<T> extends HorizontalLayout {
 	protected abstract void loadGrid();
 
 	protected abstract void createEditForm(Object empl);
+	
+	@Override
+	public void refresh() {
+		this.removeAll();
+		createContent();		
+	}
 }

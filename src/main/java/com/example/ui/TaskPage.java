@@ -1,27 +1,16 @@
 package com.example.ui;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.example.domain.Customer;
-import com.example.domain.Role;
 import com.example.domain.Task;
-import com.example.enums.Roles;
 import com.example.service.CustomerService;
-import com.example.service.RoleService;
 import com.example.service.TaskService;
 import com.example.demo.MainUI;
-import com.example.demo.MyNotification;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -38,11 +27,10 @@ public class TaskPage extends BasePage<Task> {
 
 	@Autowired
 	private CustomerService customerService;
-	@Autowired
-	private DataSource dataSource;
+
 	@Autowired
 	private TaskService taskService;
-	
+
 	public TaskPage() {
 		super();
 	}
@@ -107,26 +95,9 @@ public class TaskPage extends BasePage<Task> {
 		});
 
 		Button runButton = new Button("Run!", event -> {
-			String query = item.getQuery();
-			try (Connection conn = dataSource.getConnection()) {
-				PreparedStatement st = conn.prepareStatement(query);
-				ResultSet rs = st.executeQuery(query);
-				int columnCount = rs.getMetaData().getColumnCount();
-				String result = "";
-				if (columnCount > 0) {
-					while (rs.next()) {
-						for (int i = 1; i <= columnCount; i++) {
-							result += rs.getString(i) + "|";
-						}
-					}
-
-					MyNotification.info(result);
-				}
-
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			UI.getCurrent().access(() -> {
+				taskService.runTask(item, false);
+			});
 		});
 
 		Button reloadButton = new Button("Reload");

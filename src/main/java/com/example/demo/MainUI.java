@@ -8,17 +8,21 @@ import com.example.ui.OrderPage;
 import com.example.ui.ProductPage;
 import com.example.ui.TaskPage;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.ErrorEvent;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.lumo.Lumo;
 
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -31,8 +35,9 @@ public class MainUI extends AppLayout {
 
 	public MainUI() {
 		BeanWirer.wire(this);
+		setupErrorHandler();
 		DrawerToggle toggle = new DrawerToggle();
-				
+
 		H1 user = new H1("Hi, " + username);
 		user.getStyle().set("font-size", "var(--lumo-font-size-l)").set("font-weight", "bold");
 
@@ -44,12 +49,14 @@ public class MainUI extends AppLayout {
 
 	private Tabs getTabs() {
 		Tabs tabs = new Tabs();
-		tabs.add(createTab(VaadinIcon.DASHBOARD, "Dashboard", null), createTab(VaadinIcon.CART, "Orders", OrderPage.class),
+		tabs.add(createTab(VaadinIcon.DASHBOARD, "Dashboard", null),
+				createTab(VaadinIcon.CART, "Orders", OrderPage.class),
 				createTab(VaadinIcon.USER_HEART, "Customers", CustomerPage.class),
 				createTab(VaadinIcon.PACKAGE, "Products", ProductPage.class),
 				createTab(VaadinIcon.RECORDS, "Documents", null), createTab(VaadinIcon.LIST, "Tasks", TaskPage.class),
-				createTab(VaadinIcon.CHART, "Analytics", null));
+				createTab(VaadinIcon.DATE_INPUT, "Task Log", TaskLogPage.class));
 		tabs.setOrientation(Tabs.Orientation.VERTICAL);
+
 		return tabs;
 	}
 
@@ -66,7 +73,13 @@ public class MainUI extends AppLayout {
 		// Demo has no routes
 		link.setTabIndex(-1);
 
-		return new Tab(link);
+		Tab tab = new Tab(link);
+
+		tab.getElement().addEventListener("click", click -> {
+
+		});
+
+		return tab;
 	}
 
 	public Component createToggleThemeButton() {
@@ -83,4 +96,13 @@ public class MainUI extends AppLayout {
 		return toggleButton;
 	}
 
+	private void setupErrorHandler() {
+		VaadinSession.getCurrent().setErrorHandler(error -> {
+			if (UI.getCurrent() != null) {
+				UI.getCurrent().access(() -> {
+					Notification.show("An internal error has occurred: " + error.getThrowable().getMessage());
+				});
+			}
+		});
+	}
 }
