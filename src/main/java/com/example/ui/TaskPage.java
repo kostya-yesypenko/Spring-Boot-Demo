@@ -32,7 +32,7 @@ public class TaskPage extends BasePage<Task> {
 	private TaskService taskService;
 
 	public TaskPage() {
-		super();
+		super("Tasks");
 	}
 
 	@Override

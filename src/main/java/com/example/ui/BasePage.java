@@ -1,6 +1,7 @@
 package com.example.ui;
 
 import com.example.configuration.BeanWirer;
+import com.example.demo.MainUI;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -20,10 +21,16 @@ public abstract class BasePage<T> extends HorizontalLayout implements Refreshabl
 	Grid<T> grid;
 
 	VerticalLayout editFormLayout = new VerticalLayout();
+	
+	String pageName;
 
-	public BasePage() {
+	public BasePage(String pageName) {
 		super();
 		BeanWirer.wire(this);
+		
+		this.pageName = pageName;
+		
+		MainUI.pagesByName.put(pageName, this);
 
 		setHeight("100%");
 		

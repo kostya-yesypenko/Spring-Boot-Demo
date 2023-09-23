@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 
 import com.example.configuration.BeanWirer;
@@ -32,6 +35,8 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 public class MainUI extends AppLayout {
 	@Value("${default.user:dmytro}")
 	private String username;
+	
+	public static Map<String, Refreshable> pagesByName = new HashMap<>();
 
 	public MainUI() {
 		BeanWirer.wire(this);
@@ -56,7 +61,7 @@ public class MainUI extends AppLayout {
 				createTab(VaadinIcon.RECORDS, "Documents", null), createTab(VaadinIcon.LIST, "Tasks", TaskPage.class),
 				createTab(VaadinIcon.DATE_INPUT, "Task Log", TaskLogPage.class));
 		tabs.setOrientation(Tabs.Orientation.VERTICAL);
-
+		
 		return tabs;
 	}
 
@@ -76,7 +81,11 @@ public class MainUI extends AppLayout {
 		Tab tab = new Tab(link);
 
 		tab.getElement().addEventListener("click", click -> {
-
+			Refreshable page = pagesByName.get(viewName);
+			
+			if (page !=null) {
+				page.refresh();
+			}
 		});
 
 		return tab;

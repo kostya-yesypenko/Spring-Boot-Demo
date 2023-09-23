@@ -43,19 +43,27 @@ public class TaskService extends BaseService<Task, Integer> {
 		String query = task.getQuery();
 		try (Connection conn = dataSource.getConnection()) {
 			PreparedStatement st = conn.prepareStatement(query);
-			ResultSet rs = st.executeQuery(query);
-			int columnCount = rs.getMetaData().getColumnCount();
-			if (columnCount > 0) {
-				while (rs.next()) {
-					for (int i = 1; i <= columnCount; i++) {
-						String fieldName = rs.getMetaData().getColumnName(i);
-						output += "Field = " + fieldName + ", value = " + rs.getString(i) + "\n";
+			if (query.toLowerCase().contains("select")) {
+				ResultSet rs = st.executeQuery(query);
+				int columnCount = rs.getMetaData().getColumnCount();
+				if (columnCount > 0) {
+					while (rs.next()) {
+						for (int i = 1; i <= columnCount; i++) {
+							String fieldName = rs.getMetaData().getColumnName(i);
+							output += "Field = " + fieldName + ", value = " + rs.getString(i) + "\n";
+						}
 					}
-				}
+			}
+
+			
 
 				if (!scheduled) {
 					MyNotification.info(output);
 				}
+			}
+			
+			else {
+				st.executeUpdate(query);
 			}
 			
 		} catch (SQLException e1) {

@@ -35,7 +35,7 @@ public class CustomerPage extends BasePage<Customer> {
 	private RoleService roleService;
 
 	public CustomerPage() {
-		super();		
+		super("Customers");		
 	}
 	
 	@Override

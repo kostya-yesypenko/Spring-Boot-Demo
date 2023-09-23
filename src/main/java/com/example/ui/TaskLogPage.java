@@ -44,14 +44,16 @@ public class TaskLogPage extends BasePage<TaskLog> {
 	private TaskLogService tlogService;
 	
 	public TaskLogPage() {
-		super();
+		super("Task Log");
 	}
 
 	@Override
 	protected void loadGrid() {
-		grid.addColumn(e -> e.getId()).setWidth("50px").setHeader("ID").setComparator(TaskLog::getId);
-		grid.addColumn(e -> e.getTask().getId()).setWidth("100px").setHeader("Name").setComparator(t -> t.getTask().getId());
-		grid.addColumn(e -> e.getDate()).setWidth("300px").setHeader("Execute Date").setComparator(TaskLog::getDate);
+		grid.addColumn(e -> e.getId()).setWidth("10px").setHeader("ID").setComparator(TaskLog::getId);
+		grid.addColumn(e -> e.getTask().getId()).setWidth("20px").setHeader("Task ID").setComparator(t -> t.getTask().getId());
+		grid.addColumn(e -> e.getDate()).setWidth("50px").setHeader("Execute Date").setComparator(TaskLog::getDate);
+		grid.addColumn(e -> e.getResult().getName()).setWidth("30px").setHeader("Result").setComparator(TaskLog::getResult);
+		grid.addColumn(e -> e.getOutput()).setWidth("500px").setHeader("Output").setComparator(TaskLog::getOutput);
 
 		grid.addItemClickListener(it -> {
 			//createEditForm(it.getItem());

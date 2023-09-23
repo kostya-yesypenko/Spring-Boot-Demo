@@ -29,7 +29,7 @@ public class ProductPage extends BasePage<Product> {
 
 
 	public ProductPage() {
-		super();		
+		super("Products");		
 	}
 	
 	@Override

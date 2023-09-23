@@ -37,7 +37,7 @@ public class OrderPage extends BasePage<Order> {
 	private ProductService productService;
 
 	public OrderPage() {
-		super();
+		super("Orders");
 	}
 
 	@Override
